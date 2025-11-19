@@ -48,7 +48,7 @@ const Navbar = () => {
           {/* Logo */}
           <div className="flex items-center gap-2 text-primary-foreground">
             <Microscope className="w-6 h-6" />
-            <span className="text-xl font-bold">TerraGuard AI</span>
+            <span className="text-xl font-bold">Terra_Guard_AI</span>
           </div>
 
           {/* Desktop Navigation */}
