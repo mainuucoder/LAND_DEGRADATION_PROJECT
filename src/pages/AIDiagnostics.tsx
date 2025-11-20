@@ -94,8 +94,16 @@ const AISoilAnalysisService = {
       generalRecommendations.push('Add compost to improve water retention');
     }
 
-    if (lastFertilizer?.includes('nitrogen')) {
+    if (lastFertilizer?.includes('nitrogen') || lastFertilizer?.includes('Urea') || lastFertilizer?.includes('Ammonium')) {
       nutrientRecommendation = 'Recent nitrogen application detected. Monitor plant growth and adjust future applications accordingly.';
+    }
+
+    if (lastFertilizer?.includes('Potash') || lastFertilizer?.includes('potassium')) {
+      nutrientRecommendation += ' Potassium-rich fertilizer applied. Good for fruit development and disease resistance.';
+    }
+
+    if (lastFertilizer?.includes('Phosphate') || lastFertilizer?.includes('Superphosphate')) {
+      nutrientRecommendation += ' Phosphorus application noted. Beneficial for root development and flowering.';
     }
 
     if (issues?.includes('yellow')) {
@@ -421,12 +429,59 @@ const AIDiagnostics = () => {
 
             <div className="space-y-2">
               <Label htmlFor="lastFertilizer">Recent Fertilizer Used</Label>
-              <Input
-                id="lastFertilizer"
-                placeholder="e.g., NPK 10-10-10, Urea, etc."
-                value={userInput.lastFertilizer}
-                onChange={(e) => handleInputChange('lastFertilizer', e.target.value)}
-              />
+              <Select onValueChange={(value) => handleInputChange('lastFertilizer', value)}>
+                <SelectTrigger>
+                  <SelectValue placeholder="Select fertilizer" />
+                </SelectTrigger>
+                <SelectContent className="max-h-60">
+                  {/* Nitrogen Fertilizers */}
+                  <SelectItem value="Urea">Urea (46-0-0)</SelectItem>
+                  <SelectItem value="Ammonium Nitrate">Ammonium Nitrate (34-0-0)</SelectItem>
+                  <SelectItem value="Ammonium Sulfate">Ammonium Sulfate (21-0-0)</SelectItem>
+                  <SelectItem value="Calcium Ammonium Nitrate">Calcium Ammonium Nitrate (27-0-0)</SelectItem>
+                  <SelectItem value="Anhydrous Ammonia">Anhydrous Ammonia (82-0-0)</SelectItem>
+                  
+                  {/* Phosphorus Fertilizers */}
+                  <SelectItem value="Single Superphosphate">Single Superphosphate (0-20-0)</SelectItem>
+                  <SelectItem value="Triple Superphosphate">Triple Superphosphate (0-46-0)</SelectItem>
+                  <SelectItem value="Diammonium Phosphate">Diammonium Phosphate (18-46-0)</SelectItem>
+                  <SelectItem value="Monoammonium Phosphate">Monoammonium Phosphate (11-52-0)</SelectItem>
+                  <SelectItem value="Rock Phosphate">Rock Phosphate (0-30-0)</SelectItem>
+                  
+                  {/* Potassium Fertilizers */}
+                  <SelectItem value="Muriate of Potash">Muriate of Potash (0-0-60)</SelectItem>
+                  <SelectItem value="Sulfate of Potash">Sulfate of Potash (0-0-50)</SelectItem>
+                  <SelectItem value="Potassium Nitrate">Potassium Nitrate (13-0-44)</SelectItem>
+                  
+                  {/* Compound Fertilizers */}
+                  <SelectItem value="NPK 10-10-10">NPK 10-10-10 (Balanced)</SelectItem>
+                  <SelectItem value="NPK 15-15-15">NPK 15-15-15 (High Analysis)</SelectItem>
+                  <SelectItem value="NPK 20-20-20">NPK 20-20-20 (Premium)</SelectItem>
+                  <SelectItem value="NPK 12-12-17">NPK 12-12-17 (Fruit & Flower)</SelectItem>
+                  <SelectItem value="NPK 17-17-17">NPK 17-17-17 (All Purpose)</SelectItem>
+                  <SelectItem value="NPK 19-19-19">NPK 19-19-19 (Water Soluble)</SelectItem>
+                  
+                  {/* Organic Fertilizers */}
+                  <SelectItem value="Compost">Compost (Organic)</SelectItem>
+                  <SelectItem value="Manure">Farmyard Manure (Organic)</SelectItem>
+                  <SelectItem value="Vermicompost">Vermicompost (Organic)</SelectItem>
+                  <SelectItem value="Bone Meal">Bone Meal (3-15-0)</SelectItem>
+                  <SelectItem value="Blood Meal">Blood Meal (12-0-0)</SelectItem>
+                  <SelectItem value="Fish Meal">Fish Meal (10-4-0)</SelectItem>
+                  <SelectItem value="Seaweed Extract">Seaweed Extract (Organic)</SelectItem>
+                  
+                  {/* Specialty Fertilizers */}
+                  <SelectItem value="Calcium Nitrate">Calcium Nitrate (15-0-0)</SelectItem>
+                  <SelectItem value="Magnesium Sulfate">Magnesium Sulfate (Epsom Salt)</SelectItem>
+                  <SelectItem value="Micronutrient Mix">Micronutrient Mix</SelectItem>
+                  <SelectItem value="Slow Release Fertilizer">Slow Release Fertilizer</SelectItem>
+                  <SelectItem value="Liquid Fertilizer">Liquid Fertilizer</SelectItem>
+                  
+                  {/* None */}
+                  <SelectItem value="None">No Fertilizer Applied</SelectItem>
+                  <SelectItem value="Other">Other (Specify in notes)</SelectItem>
+                </SelectContent>
+              </Select>
             </div>
 
             <div className="space-y-2">
