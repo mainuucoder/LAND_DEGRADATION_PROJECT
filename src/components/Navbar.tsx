@@ -41,15 +41,23 @@ const Navbar = () => {
     setIsOpen(false);
   };
 
+  const scrollToTop = () => {
+    window.scrollTo({ top: 0, behavior: 'smooth' });
+    setIsOpen(false);
+  };
+
   return (
     <nav className="fixed top-0 left-0 right-0 z-50 bg-gradient-to-r from-primary to-secondary shadow-md backdrop-blur-sm">
       <div className="container mx-auto px-4">
         <div className="flex items-center justify-between h-16">
-          {/* Logo */}
-          <div className="flex items-center gap-2 text-primary-foreground">
+          {/* Logo - Now Clickable */}
+          <button
+            onClick={scrollToTop}
+            className="flex items-center gap-2 text-primary-foreground hover:opacity-80 transition-opacity"
+          >
             <Microscope className="w-6 h-6" />
-            <span className="text-xl font-bold">Terra_Guard_AI</span>
-          </div>
+            <span className="text-xl font-bold">TerraGuard AI</span>
+          </button>
 
           {/* Desktop Navigation */}
           <div className="hidden md:flex items-center gap-6">

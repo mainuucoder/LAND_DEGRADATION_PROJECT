@@ -373,19 +373,19 @@ const CarbonCredits = () => {
                   <p className="text-xs md:text-sm text-muted-foreground">Volume</p>
                   <p className="text-base md:text-xl font-semibold">{marketData.volume}</p>
                 </div>
-                            <div className="col-span-2">
-              <a 
-                href="https://climateimpactx.com/?utm_source=chatgpt.com" 
-                target="_blank" 
-                rel="noopener noreferrer"
-                className="w-full"
-              >
-                <Button className="w-full bg-green-600 hover:bg-green-700 text-xs md:text-sm h-10">
-                  <Coins className="w-3 h-3 md:w-4 md:h-4 mr-2" />
-                  View Marketplace
-                </Button>
-              </a>
-            </div>
+                <div className="col-span-2">
+                  <a 
+                    href="https://climateimpactx.com/?utm_source=chatgpt.com" 
+                    target="_blank" 
+                    rel="noopener noreferrer"
+                    className="w-full"
+                  >
+                    <Button className="w-full bg-green-600 hover:bg-green-700 text-xs md:text-sm h-10">
+                      <Coins className="w-3 h-3 md:w-4 md:h-4 mr-2" />
+                      View Marketplace
+                    </Button>
+                  </a>
+                </div>
               </div>
             </CardContent>
           </Card>
@@ -415,32 +415,6 @@ const CarbonCredits = () => {
               </Card>
             ))}
           </div>
-
-          {/* Report Generation Section */}
-          {reportStatus === 'ready' && generatedReport && (
-            <Card className="shadow-lg border-2 border-green-200 bg-green-50">
-              <CardHeader className="pb-3">
-                <CardTitle className="flex items-center gap-2 text-green-800 text-lg md:text-xl">
-                  <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
-                  Report Generated
-                </CardTitle>
-                <CardDescription className="text-xs md:text-sm">
-                  ID: {generatedReport.id} • {new Date(generatedReport.generatedAt).toLocaleDateString()}
-                </CardDescription>
-              </CardHeader>
-              <CardContent>
-                <div className="flex flex-col sm:flex-row gap-3">
-                  <Button onClick={generatePDFReport} className="bg-green-600 hover:bg-green-700 text-sm">
-                    <Download className="w-4 h-4 mr-2" />
-                    Download PDF
-                  </Button>
-                  <Button variant="outline" onClick={() => setReportStatus('idle')} className="text-sm">
-                    New Report
-                  </Button>
-                </div>
-              </CardContent>
-            </Card>
-          )}
 
           {/* Carbon Farming Implementation Plan - Mobile Optimized */}
           <Card className="shadow-lg border-0">
@@ -512,6 +486,32 @@ const CarbonCredits = () => {
                     <span className="ml-2">{getReportStatusText()}</span>
                   </Button>
                 </div>
+
+                {/* Report Generated Card - Now appears below the Generate Report button */}
+                {reportStatus === 'ready' && generatedReport && (
+                  <Card className="shadow-lg border-2 border-green-200 bg-green-50 mt-6">
+                    <CardHeader className="pb-3">
+                      <CardTitle className="flex items-center gap-2 text-green-800 text-lg md:text-xl">
+                        <CheckCircle2 className="w-5 h-5 md:w-6 md:h-6" />
+                        Report Generated
+                      </CardTitle>
+                      <CardDescription className="text-xs md:text-sm">
+                        ID: {generatedReport.id} • {new Date(generatedReport.generatedAt).toLocaleDateString()}
+                      </CardDescription>
+                    </CardHeader>
+                    <CardContent>
+                      <div className="flex flex-col sm:flex-row gap-3">
+                        <Button onClick={generatePDFReport} className="bg-green-600 hover:bg-green-700 text-sm">
+                          <Download className="w-4 h-4 mr-2" />
+                          Download PDF
+                        </Button>
+                        <Button variant="outline" onClick={() => setReportStatus('idle')} className="text-sm">
+                          Generate New Report
+                        </Button>
+                      </div>
+                    </CardContent>
+                  </Card>
+                )}
 
                 {/* Additional Info - Mobile Optimized */}
                 <div className="grid grid-cols-1 sm:grid-cols-3 gap-3 pt-4 md:pt-6 border-t">
