@@ -14,7 +14,7 @@ Land degradation affects over 3.2 billion people globally and threatens food sec
 
 ## 🔗 Live Application
 
-**Production URL:** [https://sdg-15-hackathon.vercel.app/](https://sdg-15-hackathon.vercel.app/)
+**Production URL:** https://land-degradation-project.vercel.app/
 
 ---
 
@@ -222,8 +222,8 @@ This project is licensed under the **MIT License** - see the [LICENSE](LICENSE) 
 
 **DANIEL MAINA MUTAHI**
 - Email: danielmainuu@gmil.com
-- LinkedIn: [Your Profile](https://www.linkedin.com/in/daniel-mutahi-5952ba298)
-- GitHub: [@yourusername](https://github.com/mainuucoder)
+- LinkedIn: https://ww5952ba298w.linkedin.com/in/daniel-mutahi-
+- GitHub: (https://github.com/mainuucoder)
 
 ---
 
@@ -242,7 +242,7 @@ For questions, issues, or collaboration opportunities:
 
 - **Issues:** Open an issue on GitHub
 - **Email:** support@terraguard-ai.com
-- **Documentation:** [View Full Docs](https://sdg-15-hackathon-4dlwitt6f-mainuucoders-projects.vercel.app/)
+- **Documentation:** (https://www.canva.com/design/DAG5QsTpreo/yDI1TVZfrBfXJD3yRZhktw/edit?utm_content=DAG5QsTpreo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ---
 
