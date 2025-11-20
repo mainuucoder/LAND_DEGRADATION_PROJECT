@@ -1,11 +1,23 @@
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { Sprout, Droplets, Sun, Shield } from "lucide-react";
-
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 const Recommendations = () => {
+  const navigate = useNavigate();
   return (
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center gap-3 mb-6">
+         {/* Back Button */}
+          <Button
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
         <Sprout className="w-8 h-8 text-primary" />
         <h1 className="text-3xl font-bold">Smart Recommendations</h1>
       </div>

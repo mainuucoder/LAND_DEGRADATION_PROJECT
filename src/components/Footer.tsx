@@ -88,7 +88,7 @@ const Footer = () => {
           </div>
 
           <div className="border-t border-primary-foreground/20 pt-8 flex flex-col md:flex-row justify-between items-center gap-4 text-sm text-primary-foreground/80">
-            <p>&copy; 2025 TerraGuard AI. All rights reserved. Terms and Conditions Apply</p>
+            <p>&copy; 2025 Terra_Guard_AI. All rights reserved. Terms and Conditions Apply</p>
             <p>Advancing Sustainable Development Goals 2 & 15</p>
             <p>Developed by DANIEL. MAINA. MUTAHI.</p>
             

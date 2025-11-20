@@ -21,7 +21,8 @@ import 'leaflet/dist/leaflet.css';
 import * as XLSX from 'xlsx';
 import { saveAs } from 'file-saver';
 import { satelliteDataClient, MonitoringPoint, SoilMetrics } from "@/integrations/supabase/satellite-client";
-
+import { useNavigate } from "react-router-dom";
+import { ArrowLeft } from "lucide-react";
 // Fix for default markers
 import L from 'leaflet';
 delete (L.Icon.Default.prototype as any)._getIconUrl;
@@ -32,6 +33,7 @@ L.Icon.Default.mergeOptions({
 });
 
 const SatelliteAnalysis = () => {
+  const navigate = useNavigate();
   const [monitoringPoints, setMonitoringPoints] = useState<(MonitoringPoint & { latest_metrics: SoilMetrics | null })[]>([]);
   const [selectedPoint, setSelectedPoint] = useState<MonitoringPoint | null>(null);
   const [soilMetrics, setSoilMetrics] = useState<SoilMetrics[]>([]);
@@ -238,12 +240,24 @@ const exportData = async () => {
       </div>
     );
   }
-
+// const navigate = useNavigate();
   return (
     <div className="container mx-auto p-6 space-y-6">
       {/* Header */}
       <div className="flex items-center justify-between mb-6">
         <div className="flex items-center gap-3">
+           {/* Back Button */}
+         
+          <Button
+            
+            variant="outline"
+            size="sm"
+            onClick={() => navigate("/dashboard")}
+            className="flex items-center gap-2"
+          >
+            <ArrowLeft className="w-4 h-4" />
+            Back to Dashboard
+          </Button>
           <Satellite className="w-8 h-8 text-primary" />
           <div>
             <h1 className="text-3xl font-bold">Satellite Analysis</h1>
