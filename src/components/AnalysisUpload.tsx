@@ -1,4 +1,4 @@
-import { useState, useRef } from "react";
+import { useState, useRef, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import { Card } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
@@ -8,8 +8,52 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle, DialogDescription } f
 import { Progress } from "@/components/ui/progress";
 import { Badge } from "@/components/ui/badge";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
-import { CloudUpload, Radar, MapPin, Play, X, CheckCircle, AlertTriangle, Info, Droplets, Sprout, Thermometer, Leaf, Wifi, WifiOff } from "lucide-react";
+import { CloudUpload, Radar, MapPin, Play, X, CheckCircle, AlertTriangle, Info, Droplets, Sprout, Thermometer, Leaf, Wifi, WifiOff, Search, Navigation, ZoomIn, ZoomOut, Compass } from "lucide-react";
 import { useToast } from "@/hooks/use-toast";
+
+// Enhanced region data with soil characteristics
+const REGION_DATA = {
+  laikipia: {
+    name: "Laikipia County, Kenya",
+    coordinates: { lat: 0.3333, lng: 36.8333, zoom: 10 },
+    soilType: "Volcanic Loam",
+    climate: "Semi-arid",
+    altitude: "1800-2300m",
+    rainfall: "600-800mm",
+    commonCrops: ["Wheat", "Barley", "Potatoes", "Coffee"],
+    soilChallenges: ["Soil erosion", "Low organic matter"]
+  },
+  punjab: {
+    name: "Punjab, India",
+    coordinates: { lat: 31.1471, lng: 75.3412, zoom: 8 },
+    soilType: "Alluvial Soil",
+    climate: "Subtropical",
+    altitude: "200-300m",
+    rainfall: "400-1000mm",
+    commonCrops: ["Wheat", "Rice", "Cotton", "Sugarcane"],
+    soilChallenges: ["Waterlogging", "Salinity"]
+  },
+  iowa: {
+    name: "Iowa, USA",
+    coordinates: { lat: 41.8780, lng: -93.0977, zoom: 7 },
+    soilType: "Prairie Loam",
+    climate: "Continental",
+    altitude: "300-500m",
+    rainfall: "800-900mm",
+    commonCrops: ["Corn", "Soybeans", "Oats", "Hay"],
+    soilChallenges: ["Nutrient runoff", "Soil compaction"]
+  },
+  custom: {
+    name: "Custom Location",
+    coordinates: { lat: 0, lng: 0, zoom: 2 },
+    soilType: "Unknown",
+    climate: "Unknown",
+    altitude: "Unknown",
+    rainfall: "Unknown",
+    commonCrops: [],
+    soilChallenges: []
+  }
+};
 
 const AnalysisUpload = () => {
   const [file, setFile] = useState<File | null>(null);
@@ -20,12 +64,195 @@ const AnalysisUpload = () => {
   const [showAnalysis, setShowAnalysis] = useState(false);
   const [sensorConnected, setSensorConnected] = useState(false);
   const [sensorData, setSensorData] = useState<any>(null);
+  const [mapLoaded, setMapLoaded] = useState(false);
+  const [customLocation, setCustomLocation] = useState("");
+  const [currentCoordinates, setCurrentCoordinates] = useState(REGION_DATA.laikipia.coordinates);
+  const [zoomLevel, setZoomLevel] = useState(REGION_DATA.laikipia.coordinates.zoom);
+  const [userLocation, setUserLocation] = useState<{lat: number, lng: number} | null>(null);
+  const [locationAnalysis, setLocationAnalysis] = useState<any>(null);
+  const mapRef = useRef<HTMLDivElement>(null);
   const fileInputRef = useRef<HTMLInputElement>(null);
   const { toast } = useToast();
 
-  // Soil image validation
+  // Get current region data
+  const currentRegion = REGION_DATA[region as keyof typeof REGION_DATA];
+
+  // Initialize map and geolocation
+  useEffect(() => {
+    const initializeMap = () => {
+      if (!mapRef.current) return;
+
+      // Simulate map loading
+      setTimeout(() => {
+        setMapLoaded(true);
+        toast({
+          title: "Map Loaded",
+          description: "Interactive map is ready for location analysis",
+        });
+      }, 1000);
+    };
+
+    initializeMap();
+  }, [toast]);
+
+  // Get user's current location
+  const getUserLocation = () => {
+    if (!navigator.geolocation) {
+      toast({
+        title: "Geolocation not supported",
+        description: "Your browser doesn't support location services",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Getting your location...",
+      description: "Please allow location access",
+    });
+
+    navigator.geolocation.getCurrentPosition(
+      (position) => {
+        const userCoords = {
+          lat: position.coords.latitude,
+          lng: position.coords.longitude,
+          zoom: 12
+        };
+        
+        setUserLocation(userCoords);
+        setCurrentCoordinates(userCoords);
+        setRegion("custom");
+        setCustomLocation("Your Current Location");
+        
+        toast({
+          title: "Location Found",
+          description: "Using your current location for analysis",
+        });
+
+        // Analyze location
+        analyzeLocation(userCoords);
+      },
+      (error) => {
+        toast({
+          title: "Location access denied",
+          description: "Please enable location services or select a region manually",
+          variant: "destructive",
+        });
+      }
+    );
+  };
+
+  // Analyze location based on coordinates
+  const analyzeLocation = (coords: {lat: number, lng: number}) => {
+    // Simulate location-based soil analysis
+    const analysis = {
+      coordinates: coords,
+      soilType: predictSoilType(coords),
+      climateZone: predictClimateZone(coords),
+      elevation: predictElevation(coords),
+      waterAvailability: predictWaterAvailability(coords),
+      recommendations: generateLocationRecommendations(coords),
+      risks: identifyRisks(coords)
+    };
+
+    setLocationAnalysis(analysis);
+  };
+
+  // Mock prediction functions
+  const predictSoilType = (coords: {lat: number, lng: number}) => {
+    const soilTypes = ["Clay Loam", "Sandy Loam", "Silt Loam", "Peaty Soil", "Chalky Soil"];
+    return soilTypes[Math.floor(Math.random() * soilTypes.length)];
+  };
+
+  const predictClimateZone = (coords: {lat: number, lng: number}) => {
+    if (coords.lat > 35) return "Temperate";
+    if (coords.lat < -35) return "Temperate";
+    if (Math.abs(coords.lat) < 23.5) return "Tropical";
+    return "Arid";
+  };
+
+  const predictElevation = (coords: {lat: number, lng: number}) => {
+    return `${Math.round(100 + Math.random() * 2000)}m`;
+  };
+
+  const predictWaterAvailability = (coords: {lat: number, lng: number}) => {
+    const availability = ["Low", "Moderate", "High"];
+    return availability[Math.floor(Math.random() * availability.length)];
+  };
+
+  const generateLocationRecommendations = (coords: {lat: number, lng: number}) => {
+    const recommendations = [
+      "Consider soil testing for precise nutrient analysis",
+      "Implement water conservation practices",
+      "Use cover crops to improve soil health",
+      "Rotate crops to maintain soil fertility"
+    ];
+    return recommendations.slice(0, 2 + Math.floor(Math.random() * 2));
+  };
+
+  const identifyRisks = (coords: {lat: number, lng: number}) => {
+    const risks = [
+      "Potential soil erosion in hilly areas",
+      "Seasonal water scarcity",
+      "Nutrient leaching in sandy soils",
+      "Soil compaction risk"
+    ];
+    return risks.slice(0, 1 + Math.floor(Math.random() * 2));
+  };
+
+  // Update map when region changes
+  useEffect(() => {
+    if (region !== "custom") {
+      setCurrentCoordinates(currentRegion.coordinates);
+      setZoomLevel(currentRegion.coordinates.zoom);
+      analyzeLocation(currentRegion.coordinates);
+    }
+  }, [region, currentRegion]);
+
+  const handleZoomIn = () => {
+    setZoomLevel(prev => Math.min(prev + 1, 18));
+  };
+
+  const handleZoomOut = () => {
+    setZoomLevel(prev => Math.max(prev - 1, 1));
+  };
+
+  const handleCustomLocation = () => {
+    if (!customLocation.trim()) {
+      toast({
+        title: "Location required",
+        description: "Please enter a location to search",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    toast({
+      title: "Searching Location",
+      description: `Analyzing soil conditions for ${customLocation}`,
+    });
+
+    // Simulate geocoding and analysis
+    setTimeout(() => {
+      const newCoords = {
+        lat: (Math.random() * 180 - 90),
+        lng: (Math.random() * 360 - 180),
+        zoom: 12
+      };
+      
+      setCurrentCoordinates(newCoords);
+      setZoomLevel(12);
+      analyzeLocation(newCoords);
+      
+      toast({
+        title: "Location Analyzed",
+        description: `Soil analysis complete for ${customLocation}`,
+      });
+    }, 1500);
+  };
+
+  // Soil image validation (same as before)
   const validateSoilImage = (file: File): boolean => {
-    // Check file type
     const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/tiff', 'image/tif'];
     if (!allowedTypes.includes(file.type)) {
       toast({
@@ -36,8 +263,7 @@ const AnalysisUpload = () => {
       return false;
     }
 
-    // Check file size (max 10MB)
-    const maxSize = 10 * 1024 * 1024; // 10MB in bytes
+    const maxSize = 10 * 1024 * 1024;
     if (file.size > maxSize) {
       toast({
         title: "File too large",
@@ -47,7 +273,6 @@ const AnalysisUpload = () => {
       return false;
     }
 
-    // Check filename for soil-related keywords (basic validation)
     const soilKeywords = ['soil', 'dirt', 'ground', 'earth', 'land', 'clay', 'sand', 'mud', 'farm', 'field', 'agriculture', 'crop'];
     const fileName = file.name.toLowerCase();
     const hasSoilKeyword = soilKeywords.some(keyword => fileName.includes(keyword));
@@ -69,7 +294,6 @@ const AnalysisUpload = () => {
       const selectedFile = e.target.files[0];
       
       if (!validateSoilImage(selectedFile)) {
-        // Reset file input
         if (fileInputRef.current) {
           fileInputRef.current.value = '';
         }
@@ -85,7 +309,7 @@ const AnalysisUpload = () => {
     }
   };
 
-  // Mock IoT sensor connection and data
+  // Mock IoT sensor connection (same as before)
   const connectSensors = () => {
     if (!sensorId.trim()) {
       toast({
@@ -96,14 +320,13 @@ const AnalysisUpload = () => {
       return;
     }
 
-    // Simulate sensor connection
     setSensorConnected(true);
     
-    // Mock sensor data
     const mockSensorData = {
       sensorId: sensorId,
       status: "connected",
       lastUpdate: new Date().toLocaleTimeString(),
+      location: currentCoordinates,
       readings: {
         moisture: `${(25 + Math.random() * 15).toFixed(1)}%`,
         temperature: `${(20 + Math.random() * 10).toFixed(1)}°C`,
@@ -118,7 +341,7 @@ const AnalysisUpload = () => {
     
     toast({
       title: "Sensors Connected",
-      description: `Sensor ${sensorId} is now providing real-time data`,
+      description: `Sensor ${sensorId} providing data from ${currentRegion.name}`,
     });
   };
 
@@ -153,7 +376,7 @@ const AnalysisUpload = () => {
           setShowAnalysis(true);
           toast({
             title: "Analysis Complete!",
-            description: "Your soil analysis results are ready.",
+            description: "Your comprehensive soil analysis results are ready.",
           });
           return 100;
         }
@@ -162,9 +385,19 @@ const AnalysisUpload = () => {
     }, 200);
   };
 
-  // Generate analysis results based on data source
+  // Generate analysis results with location data
   const generateAnalysisResults = () => {
-    const baseResults = {
+    const regionInfo = REGION_DATA[region as keyof typeof REGION_DATA];
+    
+    return {
+      locationInfo: {
+        region: regionInfo.name,
+        coordinates: currentCoordinates,
+        soilType: locationAnalysis?.soilType || regionInfo.soilType,
+        climate: locationAnalysis?.climateZone || regionInfo.climate,
+        altitude: locationAnalysis?.elevation || regionInfo.altitude,
+        waterAvailability: locationAnalysis?.waterAvailability,
+      },
       imageInfo: file ? {
         fileName: file.name,
         fileSize: `${(file.size / 1024 / 1024).toFixed(2)} MB`,
@@ -217,33 +450,27 @@ const AnalysisUpload = () => {
       },
 
       recommendations: [
+        ...(locationAnalysis?.recommendations || []),
         "Apply 50kg/ha of DAP fertilizer for phosphorus deficiency",
         "Maintain current irrigation schedule",
         "Consider adding organic compost to improve soil structure",
         "Test soil again in 4-6 weeks",
       ],
 
-      cropSuitability: [
-        { crop: "Wheat", suitability: "High", score: 85 },
-        { crop: "Corn", suitability: "Medium", score: 72 },
-        { crop: "Tomatoes", suitability: "High", score: 88 },
-        { crop: "Beans", suitability: "High", score: 90 },
-      ],
+      cropSuitability: regionInfo.commonCrops.map(crop => ({
+        crop,
+        suitability: ["High", "Medium", "Low"][Math.floor(Math.random() * 3)],
+        score: 60 + Math.floor(Math.random() * 35)
+      })),
 
-      aiInsights: sensorData ? [
-        "Real-time sensor data shows stable soil conditions",
-        "Good moisture retention detected",
-        "Nutrient levels within acceptable ranges",
-        "Ideal temperature for plant growth",
-      ] : [
+      aiInsights: [
+        ...(locationAnalysis?.risks || []).map(risk => `⚠️ ${risk}`),
         "Soil shows good water retention capacity",
         "Moderate organic matter content detected",
         "Slight phosphorus deficiency identified",
         "Ideal pH level for most common crops",
       ],
     };
-
-    return baseResults;
   };
 
   const analysisResults = generateAnalysisResults();
@@ -284,12 +511,12 @@ const AnalysisUpload = () => {
               AI Soil Analysis
             </h2>
             <p className="text-xl text-muted-foreground max-w-2xl mx-auto">
-              Upload soil images or connect IoT sensors for comprehensive soil health assessment
+              Advanced soil analysis with location-based insights and IoT integration
             </p>
           </div>
 
           <div className="grid md:grid-cols-2 gap-8">
-            {/* Upload Section */}
+            {/* Upload Section - Same as before */}
             <Card className="p-6 space-y-6 shadow-lg hover:shadow-xl transition-shadow">
               <h3 className="text-2xl font-semibold flex items-center gap-2">
                 <CloudUpload className="w-6 h-6 text-accent" />
@@ -395,22 +622,92 @@ const AnalysisUpload = () => {
               </div>
             </Card>
 
-            {/* Location Selection */}
+            {/* Enhanced Location Analysis Section */}
             <Card className="p-6 space-y-6 shadow-lg hover:shadow-xl transition-shadow">
               <h3 className="text-2xl font-semibold flex items-center gap-2">
                 <MapPin className="w-6 h-6 text-accent" />
                 Location Analysis
               </h3>
 
-              {/* Map Placeholder */}
-              <div className="h-64 bg-muted rounded-lg overflow-hidden shadow-inner">
-                <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
-                  <div className="text-center space-y-2">
-                    <MapPin className="w-16 h-16 mx-auto text-primary/40" />
-                    <p className="text-muted-foreground">Interactive map will load here</p>
+              {/* Interactive Map */}
+              <div className="h-64 bg-muted rounded-lg overflow-hidden shadow-inner relative">
+                {!mapLoaded ? (
+                  <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
+                    <div className="text-center space-y-2">
+                      <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
+                      <p className="text-muted-foreground">Loading interactive map...</p>
+                    </div>
                   </div>
-                </div>
+                ) : (
+                  <div ref={mapRef} className="w-full h-full bg-gradient-to-br from-blue-50 to-green-50 relative">
+                    {/* Map Background with Grid */}
+                    <div className="absolute inset-0 bg-[url('data:image/svg+xml;base64,PHN2ZyB3aWR0aD0iNDAiIGhlaWdodD0iNDAiIHZpZXdCb3g9IjAgMCA0MCA0MCIgZmlsbD0ibm9uZSIgeG1sbnM9Imh0dHA6Ly93d3cudzMub3JnLzIwMDAvc3ZnIj4KPHBhdGggZD0iTTAgMEg0MFY0MEgwVjBaIiBmaWxsPSJub25lIi8+CjxwYXRoIGQ9Ik0wIDBINDBNNDAgMEw0MCA0ME0wIDBMNDAgNDBNMCA0MEw0MCAwTTAgMEw0MCA0ME0wIDQwTDQwIDAiIHN0cm9rZT0iI0RERERERCIgc3Ryb2tlLW9wYWNpdHk9IjAuMiIvPgo8L3N2Zz4K')]"></div>
+                    
+                    {/* Map Center Marker */}
+                    <div className="absolute top-1/2 left-1/2 transform -translate-x-1/2 -translate-y-1/2">
+                      <div className="relative">
+                        <MapPin className="w-8 h-8 text-red-500 drop-shadow-lg" />
+                        <div className="absolute -top-2 -right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-full font-bold">
+                          {currentRegion.name.split(',')[0]}
+                        </div>
+                      </div>
+                    </div>
+
+                    {/* Coordinates Display */}
+                    <div className="absolute bottom-2 left-2 bg-black/70 text-white text-xs px-2 py-1 rounded">
+                      {currentCoordinates.lat.toFixed(4)}°, {currentCoordinates.lng.toFixed(4)}°
+                    </div>
+
+                    {/* Zoom Controls */}
+                    <div className="absolute top-2 right-2 flex flex-col gap-1">
+                      <Button size="sm" variant="secondary" className="w-8 h-8 p-0" onClick={handleZoomIn}>
+                        <ZoomIn className="w-4 h-4" />
+                      </Button>
+                      <Button size="sm" variant="secondary" className="w-8 h-8 p-0" onClick={handleZoomOut}>
+                        <ZoomOut className="w-4 h-4" />
+                      </Button>
+                    </div>
+
+                    {/* Location Button */}
+                    <Button 
+                      size="sm" 
+                      variant="secondary" 
+                      className="absolute top-2 left-2"
+                      onClick={getUserLocation}
+                    >
+                      <Compass className="w-4 h-4" />
+                    </Button>
+                  </div>
+                )}
               </div>
+
+              {/* Location Analysis Results */}
+              {locationAnalysis && (
+                <Card className="p-4 bg-blue-50 border-blue-200">
+                  <h4 className="font-semibold mb-3 flex items-center gap-2 text-blue-800">
+                    <MapPin className="w-5 h-5" />
+                    Location Analysis
+                  </h4>
+                  <div className="grid grid-cols-2 gap-3 text-sm">
+                    <div>
+                      <div className="text-blue-600 font-medium">Soil Type</div>
+                      <div>{locationAnalysis.soilType}</div>
+                    </div>
+                    <div>
+                      <div className="text-blue-600 font-medium">Climate Zone</div>
+                      <div>{locationAnalysis.climateZone}</div>
+                    </div>
+                    <div>
+                      <div className="text-blue-600 font-medium">Elevation</div>
+                      <div>{locationAnalysis.elevation}</div>
+                    </div>
+                    <div>
+                      <div className="text-blue-600 font-medium">Water Availability</div>
+                      <div>{locationAnalysis.waterAvailability}</div>
+                    </div>
+                  </div>
+                </Card>
+              )}
 
               {/* Region Selection */}
               <div className="space-y-4">
@@ -429,12 +726,46 @@ const AnalysisUpload = () => {
                   </Select>
                 </div>
 
+                {/* Custom Location Search */}
+                {region === "custom" && (
+                  <div className="space-y-2">
+                    <Label htmlFor="customLocation">Search Location</Label>
+                    <div className="flex gap-2">
+                      <Input
+                        id="customLocation"
+                        placeholder="Enter address or coordinates..."
+                        value={customLocation}
+                        onChange={(e) => setCustomLocation(e.target.value)}
+                      />
+                      <Button onClick={handleCustomLocation} size="sm">
+                        <Search className="w-4 h-4" />
+                      </Button>
+                    </div>
+                  </div>
+                )}
+
+                {/* Current Location Info */}
+                <div className="p-3 bg-green-50 rounded-lg border border-green-200">
+                  <div className="flex items-center gap-2 text-green-700">
+                    <Navigation className="w-4 h-4" />
+                    <span className="text-sm font-medium">Analysis Location:</span>
+                  </div>
+                  <div className="text-sm text-green-600 mt-1">
+                    {currentRegion.name}
+                    {region === "custom" && customLocation && ` - ${customLocation}`}
+                  </div>
+                  <div className="text-xs text-green-500 mt-1">
+                    Zoom: {zoomLevel}x • {currentCoordinates.lat.toFixed(4)}°, {currentCoordinates.lng.toFixed(4)}°
+                  </div>
+                </div>
+
                 {/* Data Source Status */}
                 <div className="p-3 bg-muted/50 rounded-lg">
                   <div className="text-sm font-medium mb-1">Data Sources:</div>
                   <div className="space-y-1 text-xs">
                     {file && <div className="text-green-600">✓ Soil image uploaded</div>}
                     {sensorConnected && <div className="text-green-600">✓ IoT sensors connected</div>}
+                    {locationAnalysis && <div className="text-blue-600">✓ Location analyzed</div>}
                     {!file && !sensorConnected && <div className="text-yellow-600">⚠ No data source selected</div>}
                   </div>
                 </div>
@@ -447,7 +778,7 @@ const AnalysisUpload = () => {
                   size="lg"
                 >
                   <Play className="mr-2 w-5 h-5" />
-                  {analyzing ? "Analyzing..." : "Run AI Analysis"}
+                  {analyzing ? "Analyzing..." : "Run Comprehensive Analysis"}
                 </Button>
 
                 {/* Progress Bar */}
@@ -455,7 +786,7 @@ const AnalysisUpload = () => {
                   <div className="space-y-2">
                     <Progress value={progress} className="w-full" />
                     <p className="text-center text-sm text-muted-foreground">
-                      Analyzing... {progress}%
+                      Analyzing soil and location data... {progress}%
                     </p>
                   </div>
                 )}
@@ -465,25 +796,26 @@ const AnalysisUpload = () => {
         </div>
       </div>
 
-      {/* Analysis Results Modal */}
+      {/* Enhanced Analysis Results Modal with Location Data */}
       <Dialog open={showAnalysis} onOpenChange={setShowAnalysis}>
         <DialogContent className="max-w-6xl max-h-[90vh] overflow-y-auto">
           <DialogHeader>
             <DialogTitle className="flex items-center gap-2 text-2xl">
               <Leaf className="w-6 h-6 text-green-500" />
-              Soil Analysis Results
+              Comprehensive Soil Analysis
             </DialogTitle>
             <DialogDescription>
               {sensorConnected 
-                ? `Real-time analysis from sensor ${sensorData?.sensorId}` 
-                : "Image-based soil analysis results"
+                ? `Real-time analysis from ${sensorData?.sensorId} in ${analysisResults.locationInfo.region}` 
+                : `Image-based analysis for ${analysisResults.locationInfo.region}`
               }
             </DialogDescription>
           </DialogHeader>
 
           <Tabs defaultValue="overview" className="w-full">
-            <TabsList className="grid w-full grid-cols-4">
+            <TabsList className="grid w-full grid-cols-5">
               <TabsTrigger value="overview">Overview</TabsTrigger>
+              <TabsTrigger value="location">Location</TabsTrigger>
               <TabsTrigger value="nutrients">Nutrients</TabsTrigger>
               <TabsTrigger value="recommendations">Recommendations</TabsTrigger>
               <TabsTrigger value="crops">Crop Suitability</TabsTrigger>
@@ -508,11 +840,11 @@ const AnalysisUpload = () => {
                         <div className="mt-3 space-y-1 text-sm">
                           <div className="flex justify-between">
                             <span>File:</span>
-                            <span className="font-medium">{analysisResults.imageInfo.fileName}</span>
+                            <span className="font-medium">{analysisResults.imageInfo?.fileName}</span>
                           </div>
                           <div className="flex justify-between">
-                            <span>Size:</span>
-                            <span className="font-medium">{analysisResults.imageInfo.fileSize}</span>
+                            <span>Location:</span>
+                            <span className="font-medium">{analysisResults.locationInfo.region}</span>
                           </div>
                         </div>
                       </>
@@ -528,8 +860,8 @@ const AnalysisUpload = () => {
                             <div className="font-bold">{sensorData?.sensorId}</div>
                           </div>
                           <div className="p-3 bg-blue-50 rounded">
-                            <div>Last Update</div>
-                            <div className="font-bold">{sensorData?.lastUpdate}</div>
+                            <div>Location</div>
+                            <div className="font-bold">{analysisResults.locationInfo.region}</div>
                           </div>
                         </div>
                       </div>
@@ -541,28 +873,44 @@ const AnalysisUpload = () => {
                   </Card>
                 </Card>
 
-                {/* Soil Properties */}
+                {/* Location Summary */}
                 <Card className="p-4">
                   <h4 className="font-semibold mb-3 flex items-center gap-2">
-                    <Sprout className="w-5 h-5 text-green-500" />
-                    Soil Properties
+                    <MapPin className="w-5 h-5 text-blue-500" />
+                    Location Summary
                   </h4>
                   <div className="space-y-3">
-                    {Object.entries(analysisResults.soilProperties).map(([key, value]) => (
-                      <div key={key} className="flex justify-between items-center p-2 bg-muted/50 rounded">
-                        <span className="capitalize font-medium">{key.replace(/([A-Z])/g, ' $1')}:</span>
-                        <Badge variant="secondary">{value}</Badge>
+                    {Object.entries(analysisResults.locationInfo).map(([key, value]) => (
+                      <div key={key} className="flex justify-between items-center p-2 bg-blue-50 rounded">
+                        <span className="capitalize font-medium text-blue-700">{key.replace(/([A-Z])/g, ' $1')}:</span>
+                        <Badge variant="outline" className="text-blue-600">{value}</Badge>
                       </div>
                     ))}
                   </div>
                 </Card>
               </div>
 
+              {/* Soil Properties */}
+              <Card className="p-4">
+                <h4 className="font-semibold mb-3 flex items-center gap-2">
+                  <Sprout className="w-5 h-5 text-green-500" />
+                  Soil Properties
+                </h4>
+                <div className="grid grid-cols-2 md:grid-cols-3 gap-4">
+                  {Object.entries(analysisResults.soilProperties).map(([key, value]) => (
+                    <div key={key} className="text-center p-3 bg-muted/50 rounded-lg">
+                      <div className="text-sm text-muted-foreground capitalize">{key.replace(/([A-Z])/g, ' $1')}</div>
+                      <div className="font-bold text-lg">{value}</div>
+                    </div>
+                  ))}
+                </div>
+              </Card>
+
               {/* AI Insights */}
               <Card className="p-4">
                 <h4 className="font-semibold mb-3 flex items-center gap-2">
                   <Thermometer className="w-5 h-5 text-blue-500" />
-                  AI Insights
+                  AI Insights & Location Analysis
                 </h4>
                 <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
                   {analysisResults.aiInsights.map((insight, index) => (
@@ -575,7 +923,52 @@ const AnalysisUpload = () => {
               </Card>
             </TabsContent>
 
-            {/* Other tabs remain the same */}
+            {/* Location Tab */}
+            <TabsContent value="location" className="space-y-6">
+              <Card className="p-4">
+                <h4 className="font-semibold mb-4">Detailed Location Analysis</h4>
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-lg">Geographic Information</h5>
+                    <div className="space-y-3">
+                      {Object.entries(analysisResults.locationInfo).map(([key, value]) => (
+                        <div key={key} className="flex justify-between items-center p-3 bg-muted/50 rounded">
+                          <span className="capitalize font-medium">{key.replace(/([A-Z])/g, ' $1')}</span>
+                          <span className="font-bold">{value}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                  <div className="space-y-4">
+                    <h5 className="font-medium text-lg">Regional Characteristics</h5>
+                    <div className="space-y-3">
+                      <div className="p-3 bg-green-50 rounded">
+                        <div className="font-medium text-green-700">Common Crops</div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {currentRegion.commonCrops.map((crop, index) => (
+                            <Badge key={index} variant="secondary" className="bg-green-100 text-green-800">
+                              {crop}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                      <div className="p-3 bg-yellow-50 rounded">
+                        <div className="font-medium text-yellow-700">Soil Challenges</div>
+                        <div className="flex flex-wrap gap-1 mt-2">
+                          {currentRegion.soilChallenges.map((challenge, index) => (
+                            <Badge key={index} variant="secondary" className="bg-yellow-100 text-yellow-800">
+                              {challenge}
+                            </Badge>
+                          ))}
+                        </div>
+                      </div>
+                    </div>
+                  </div>
+                </div>
+              </Card>
+            </TabsContent>
+
+            {/* Other tabs remain similar but enhanced with location context */}
             <TabsContent value="nutrients" className="space-y-6">
               <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
                 {Object.entries(analysisResults.nutrients).map(([nutrient, data]) => (
@@ -617,7 +1010,7 @@ const AnalysisUpload = () => {
 
             <TabsContent value="crops" className="space-y-6">
               <Card className="p-4">
-                <h4 className="font-semibold mb-3">Crop Suitability Analysis</h4>
+                <h4 className="font-semibold mb-3">Crop Suitability for {analysisResults.locationInfo.region}</h4>
                 <div className="space-y-4">
                   {analysisResults.cropSuitability.map((crop, index) => (
                     <div key={index} className="flex items-center justify-between p-3 bg-muted/50 rounded-lg">
@@ -646,7 +1039,7 @@ const AnalysisUpload = () => {
               Close
             </Button>
             <Button className="flex-1">
-              Download Full Report
+              Download  Report
             </Button>
             <Button className="flex-1" variant="secondary">
               Schedule Follow-up Test
