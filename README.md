@@ -242,7 +242,7 @@ For questions, issues, or collaboration opportunities:
 
 - **Issues:** Open an issue on GitHub
 - **Email:** support@terraguard-ai.com
-- **Documentation:** (https://land-degradation-project.vercel.app)
+- **Documentation:** (https://www.canva.com/design/DAG5QsTpreo/yDI1TVZfrBfXJD3yRZhktw/edit?utm_content=DAG5QsTpreo&utm_campaign=designshare&utm_medium=link2&utm_source=sharebutton)
 
 ---
 
