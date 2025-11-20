@@ -635,7 +635,7 @@ const AnalysisUpload = () => {
                   <div className="w-full h-full bg-gradient-to-br from-primary/10 to-accent/10 flex items-center justify-center">
                     <div className="text-center space-y-2">
                       <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-primary mx-auto"></div>
-                      <p className="text-muted-foreground">Loading interactive map...</p>
+                      <p className="text-muted-foreground">Coming Soon...</p>
                     </div>
                   </div>
                 ) : (
