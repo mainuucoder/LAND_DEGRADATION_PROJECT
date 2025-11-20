@@ -24,14 +24,63 @@ const AISoilAnalysisService = {
     let moistureRecommendation = '';
     let generalRecommendations = [];
 
-    // AI learning from crop type
+    // AI learning from crop type - expanded with more crops
     const cropPreferences: any = {
+      // Cereals
       wheat: { optimalPH: [6.0, 7.0], nitrogen: 'high' },
       corn: { optimalPH: [5.8, 6.8], nitrogen: 'very high' },
       rice: { optimalPH: [5.0, 6.5], nitrogen: 'medium' },
+      barley: { optimalPH: [6.0, 7.0], nitrogen: 'medium' },
+      oats: { optimalPH: [5.5, 7.0], nitrogen: 'medium' },
+      rye: { optimalPH: [5.0, 6.5], nitrogen: 'low' },
+      millet: { optimalPH: [5.5, 7.0], nitrogen: 'low' },
+      sorghum: { optimalPH: [5.5, 7.5], nitrogen: 'medium' },
+      
+      // Legumes
       soybean: { optimalPH: [6.0, 6.8], nitrogen: 'low' },
+      peanuts: { optimalPH: [5.5, 6.5], nitrogen: 'low' },
+      lentils: { optimalPH: [5.5, 7.0], nitrogen: 'low' },
+      chickpeas: { optimalPH: [5.5, 7.0], nitrogen: 'low' },
+      beans: { optimalPH: [6.0, 7.0], nitrogen: 'low' },
+      peas: { optimalPH: [6.0, 7.5], nitrogen: 'low' },
+      
+      // Vegetables
       tomato: { optimalPH: [5.5, 6.8], nitrogen: 'medium' },
-      potato: { optimalPH: [4.8, 5.5], nitrogen: 'medium' }
+      potato: { optimalPH: [4.8, 5.5], nitrogen: 'medium' },
+      carrot: { optimalPH: [5.5, 7.0], nitrogen: 'medium' },
+      onion: { optimalPH: [6.0, 7.0], nitrogen: 'medium' },
+      cabbage: { optimalPH: [6.0, 7.5], nitrogen: 'high' },
+      broccoli: { optimalPH: [6.0, 7.0], nitrogen: 'high' },
+      cauliflower: { optimalPH: [6.0, 7.0], nitrogen: 'high' },
+      spinach: { optimalPH: [6.0, 7.5], nitrogen: 'high' },
+      lettuce: { optimalPH: [6.0, 7.0], nitrogen: 'medium' },
+      cucumber: { optimalPH: [5.5, 7.0], nitrogen: 'medium' },
+      pepper: { optimalPH: [5.5, 6.8], nitrogen: 'medium' },
+      eggplant: { optimalPH: [5.5, 6.5], nitrogen: 'medium' },
+      
+      // Fruits
+      strawberries: { optimalPH: [5.5, 6.5], nitrogen: 'medium' },
+      blueberries: { optimalPH: [4.5, 5.5], nitrogen: 'low' },
+      grapes: { optimalPH: [5.5, 6.5], nitrogen: 'low' },
+      apples: { optimalPH: [5.5, 6.5], nitrogen: 'medium' },
+      citrus: { optimalPH: [6.0, 7.0], nitrogen: 'medium' },
+      
+      // Cash crops
+      cotton: { optimalPH: [5.5, 7.0], nitrogen: 'high' },
+      sugarcane: { optimalPH: [6.0, 7.5], nitrogen: 'very high' },
+      tobacco: { optimalPH: [5.5, 6.5], nitrogen: 'medium' },
+      coffee: { optimalPH: [5.0, 6.0], nitrogen: 'medium' },
+      tea: { optimalPH: [4.5, 5.5], nitrogen: 'medium' },
+      
+      // Root crops
+      sweet_potato: { optimalPH: [5.5, 6.5], nitrogen: 'medium' },
+      cassava: { optimalPH: [5.5, 6.5], nitrogen: 'low' },
+      turnip: { optimalPH: [6.0, 7.5], nitrogen: 'medium' },
+      radish: { optimalPH: [6.0, 7.0], nitrogen: 'medium' },
+      
+      // Other
+      sunflower: { optimalPH: [6.0, 7.5], nitrogen: 'medium' },
+      alfalfa: { optimalPH: [6.5, 7.5], nitrogen: 'low' }
     };
 
     const cropInfo = cropPreferences[cropType] || { optimalPH: [6.0, 7.0], nitrogen: 'medium' };
@@ -63,13 +112,13 @@ const AISoilAnalysisService = {
       pH: {
         value: (cropInfo.optimalPH[0] + Math.random() * (cropInfo.optimalPH[1] - cropInfo.optimalPH[0])).toFixed(1),
         status: Math.random() > 0.3 ? 'optimal' : 'needs_attention',
-        recommendation: pHRecommendation || `Maintain pH between ${cropInfo.optimalPH[0]} and ${cropInfo.optimalPH[1]} for ${cropType}`
+        recommendation: pHRecommendation || `Maintain pH between ${cropInfo.optimalPH[0]} and ${cropInfo.optimalPH[1]} for ${cropType.replace('_', ' ')}`
       },
       nutrients: {
         nitrogen: cropInfo.nitrogen === 'very high' ? 'sufficient' : Math.random() > 0.4 ? 'sufficient' : 'deficient',
         phosphorus: Math.random() > 0.4 ? 'sufficient' : 'deficient',
         potassium: Math.random() > 0.4 ? 'sufficient' : 'deficient',
-        recommendation: nutrientRecommendation || `Based on your ${cropType} crop, focus on ${cropInfo.nitrogen} nitrogen management`
+        recommendation: nutrientRecommendation || `Based on your ${cropType.replace('_', ' ')} crop, focus on ${cropInfo.nitrogen} nitrogen management`
       },
       moisture: {
         level: Math.random() > 0.5 ? 'optimal' : 'low',
@@ -92,7 +141,7 @@ const AISoilAnalysisService = {
 };
 
 const AIDiagnostics = () => {
-  const navigate = useNavigate(); // Add this line to initialize the navigate function
+  const navigate = useNavigate();
   const [analysis, setAnalysis] = useState<any>(null);
   const [isLoading, setIsLoading] = useState(false);
   const [lastUpdated, setLastUpdated] = useState<string | null>(null);
@@ -168,7 +217,7 @@ const AIDiagnostics = () => {
     <div className="container mx-auto p-6 space-y-6">
       <div className="flex items-center justify-between">
         <div className="flex items-center gap-3">
-          {/* Back Button - Now working */}
+          {/* Back Button */}
           <Button
             variant="outline"
             size="sm"
@@ -188,7 +237,6 @@ const AIDiagnostics = () => {
         )}
       </div>
 
-      {/* Rest of your component remains the same */}
       <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
         <Card>
           <CardHeader>
@@ -210,7 +258,7 @@ const AIDiagnostics = () => {
                   <div className="flex items-center gap-3 p-3 bg-purple-50 rounded-lg border border-purple-200">
                     <Leaf className="w-5 h-5 text-purple-600" />
                     <div>
-                      <p className="font-medium">Crop Analysis: {userInput.cropType}</p>
+                      <p className="font-medium">Crop Analysis: {userInput.cropType.replace('_', ' ')}</p>
                       <p className="text-sm">Suitability: <span className="capitalize">{analysis.aiInsights.cropSuitability}</span></p>
                       <p className="text-xs opacity-75 mt-1">Predicted Yield: {analysis.aiInsights.predictedYield}% of optimal</p>
                     </div>
@@ -295,13 +343,62 @@ const AIDiagnostics = () => {
                   <SelectTrigger>
                     <SelectValue placeholder="Select crop" />
                   </SelectTrigger>
-                  <SelectContent>
+                  <SelectContent className="max-h-60">
+                    {/* Cereals */}
                     <SelectItem value="wheat">Wheat</SelectItem>
                     <SelectItem value="corn">Corn</SelectItem>
                     <SelectItem value="rice">Rice</SelectItem>
+                    <SelectItem value="barley">Barley</SelectItem>
+                    <SelectItem value="oats">Oats</SelectItem>
+                    <SelectItem value="rye">Rye</SelectItem>
+                    <SelectItem value="millet">Millet</SelectItem>
+                    <SelectItem value="sorghum">Sorghum</SelectItem>
+                    
+                    {/* Legumes */}
                     <SelectItem value="soybean">Soybean</SelectItem>
+                    <SelectItem value="peanuts">Peanuts</SelectItem>
+                    <SelectItem value="lentils">Lentils</SelectItem>
+                    <SelectItem value="chickpeas">Chickpeas</SelectItem>
+                    <SelectItem value="beans">Beans</SelectItem>
+                    <SelectItem value="peas">Peas</SelectItem>
+                    
+                    {/* Vegetables */}
                     <SelectItem value="tomato">Tomato</SelectItem>
                     <SelectItem value="potato">Potato</SelectItem>
+                    <SelectItem value="carrot">Carrot</SelectItem>
+                    <SelectItem value="onion">Onion</SelectItem>
+                    <SelectItem value="cabbage">Cabbage</SelectItem>
+                    <SelectItem value="broccoli">Broccoli</SelectItem>
+                    <SelectItem value="cauliflower">Cauliflower</SelectItem>
+                    <SelectItem value="spinach">Spinach</SelectItem>
+                    <SelectItem value="lettuce">Lettuce</SelectItem>
+                    <SelectItem value="cucumber">Cucumber</SelectItem>
+                    <SelectItem value="pepper">Pepper</SelectItem>
+                    <SelectItem value="eggplant">Eggplant</SelectItem>
+                    
+                    {/* Fruits */}
+                    <SelectItem value="strawberries">Strawberries</SelectItem>
+                    <SelectItem value="blueberries">Blueberries</SelectItem>
+                    <SelectItem value="grapes">Grapes</SelectItem>
+                    <SelectItem value="apples">Apples</SelectItem>
+                    <SelectItem value="citrus">Citrus</SelectItem>
+                    
+                    {/* Cash crops */}
+                    <SelectItem value="cotton">Cotton</SelectItem>
+                    <SelectItem value="sugarcane">Sugarcane</SelectItem>
+                    <SelectItem value="tobacco">Tobacco</SelectItem>
+                    <SelectItem value="coffee">Coffee</SelectItem>
+                    <SelectItem value="tea">Tea</SelectItem>
+                    
+                    {/* Root crops */}
+                    <SelectItem value="sweet_potato">Sweet Potato</SelectItem>
+                    <SelectItem value="cassava">Cassava</SelectItem>
+                    <SelectItem value="turnip">Turnip</SelectItem>
+                    <SelectItem value="radish">Radish</SelectItem>
+                    
+                    {/* Other */}
+                    <SelectItem value="sunflower">Sunflower</SelectItem>
+                    <SelectItem value="alfalfa">Alfalfa</SelectItem>
                   </SelectContent>
                 </Select>
               </div>
