@@ -161,19 +161,6 @@ Automatic deployment on every push to main branch:
 - **GitHub Pages** - Free hosting for open-source projects
 
 ---
-## Screenshots
-![Main Interface](/Screenshot%20(50).png) 
-(/Screenshot%20(53).png)
-(/Screenshot%20(54).png)
-(/Screenshot%20(55).png)
-(/Screenshot%20(56).png)
-(/Screenshot%20(57).png)
-(/Screenshot%20(58).png)
-(/Screenshot%20(59).png)
-(/Screenshot%20(60).png)
-(/Screenshot%20(61).png)
-(/Screenshot%20(62).png)
-(/Screenshot%20(63).png)
 
 ### Environment Variables
 
