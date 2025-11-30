@@ -162,7 +162,7 @@ Automatic deployment on every push to main branch:
 
 ---
 ## Screenshots
-(/Screenshot%20(50).png) 
+![Main Interface](/Screenshot%20(50).png) 
 (/Screenshot%20(53).png)
 (/Screenshot%20(54).png)
 (/Screenshot%20(55).png)
